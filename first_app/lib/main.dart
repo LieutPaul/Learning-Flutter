@@ -24,6 +24,8 @@ class MyAppBar extends StatelessWidget {
     the IconButton with the search icon is added as a child after the Expanded widget, 
     it will be positioned at the end of the row, 
     which is the right side in the default left-to-right layout of Flutter.
+
+    An Expanded widget must be a descendant of a Row, Column, or Flex
     */
 
     return Container(
@@ -54,6 +56,18 @@ class MyAppBar extends StatelessWidget {
 
 class MyScaffold extends StatelessWidget {
   const MyScaffold({super.key});
+
+  /*
+    1. Theme.of(context) retrieves the current theme of the app from the provided context object. 
+    The context is typically obtained from the BuildContext parameter passed to the build method of a widget.
+
+    2. primaryTextTheme is a property of the theme that provides a set of text styles 
+    specifically designed for primary text elements in the app. 
+    It represents a collection of predefined text styles such as headings, titles, subtitles, etc.
+
+    3. titleLarge is a specific text style within the primaryTextTheme that corresponds to a large-sized title text. 
+    It is usually used for displaying important titles in the app.
+  */
 
   @override
   Widget build(BuildContext context) {
