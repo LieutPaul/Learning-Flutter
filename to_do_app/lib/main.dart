@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(
-      title: "To Do App",
-      home: TaskList(tasks: [
-        Task("Task1", false),
-        Task("Task2", false),
-        Task("Task3", false),
-        Task("Task4", false)
-      ])));
+  runApp(MaterialApp(title: "To Do App", home: TaskList()));
 }
 
 typedef TaskFunction = Function(Task task);
@@ -56,34 +49,83 @@ class TaskTile extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class TaskList extends StatefulWidget {
-  final List<Task> tasks;
-  const TaskList({super.key, required this.tasks});
+  List<Task> tasks = [];
+  TaskList({super.key});
 
   @override
   State<TaskList> createState() => _TaskListState();
 }
 
 class _TaskListState extends State<TaskList> {
-  int _index = 0;
+  FloatingActionButton addANewTask() {
+    return FloatingActionButton(
+      onPressed: () => showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Enter New Task'),
+          content: TextFormField(
+            controller: taskController,
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Cancel'),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _addTask(taskController.text);
+                Navigator.pop(context, 'OK');
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _addTask(String task) {
+    setState(() {
+      setState(() {
+        widget.tasks.add(Task(task, false));
+      });
+    });
+  }
 
   void _changeTaskStatus(Task task) {
     setState(() {
-      _index = 0;
       task.setCompleted(!(task.getCompleted()));
     });
+  }
+
+  final TextEditingController taskController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    taskController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text("To do List")),
-        body: ListView(
-          children: widget.tasks.map((task) {
-            _index++;
-            return TaskTile(
-                task: task, index: _index, changeTaskStatus: _changeTaskStatus);
-          }).toList(),
-        ));
+        body: Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: ListView(
+              children: widget.tasks.map((task) {
+                return TaskTile(
+                    task: task,
+                    index: widget.tasks.indexOf(task) + 1,
+                    changeTaskStatus: _changeTaskStatus);
+              }).toList(),
+            )),
+        floatingActionButton: addANewTask());
   }
 }
