@@ -61,6 +61,7 @@ class TaskList extends StatefulWidget {
 class _TaskListState extends State<TaskList> {
   FloatingActionButton addANewTask() {
     return FloatingActionButton(
+      child: const Icon(Icons.add),
       onPressed: () => showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -73,12 +74,16 @@ class _TaskListState extends State<TaskList> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context, 'Cancel'),
+              onPressed: () {
+                taskController.clear();
+                Navigator.pop(context, 'Cancel');
+              },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 _addTask(taskController.text);
+                taskController.clear();
                 Navigator.pop(context, 'OK');
               },
               child: const Text('OK'),
