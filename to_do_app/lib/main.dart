@@ -112,7 +112,6 @@ class _TaskListState extends State<TaskList> {
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
     taskController.dispose();
     super.dispose();
   }
