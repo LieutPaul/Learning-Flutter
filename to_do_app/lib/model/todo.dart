@@ -1,5 +1,5 @@
 class ToDo {
-  String? todoText;
+  String todoText;
   bool isDone;
 
   ToDo({required this.todoText, this.isDone = false});

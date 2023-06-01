@@ -13,12 +13,23 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final myController = TextEditingController();
+  final searchController = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     myController.dispose();
+    searchController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    searchController.addListener(() {
+      setState(
+          () {}); // To rebuild the widget every time the search value changes
+    });
+    super.initState();
   }
 
   void _changeTaskStatus(ToDo todo) {
@@ -54,7 +65,11 @@ class _HomeState extends State<Home> {
                               fontSize: 30, fontWeight: FontWeight.w800),
                         )),
                     for (ToDo toDo in widget.toDoList)
-                      ToDoItem(toDo: toDo, f: _changeTaskStatus, d: _deleteTask)
+                      if (toDo.todoText
+                          .toLowerCase()
+                          .contains(searchController.text.toLowerCase()))
+                        ToDoItem(
+                            toDo: toDo, f: _changeTaskStatus, d: _deleteTask)
                   ],
                 ))
               ])),
@@ -115,23 +130,33 @@ class _HomeState extends State<Home> {
 
   Container _searchBox() {
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(20)),
-        child: const TextField(
-          decoration: InputDecoration(
-              contentPadding: EdgeInsets.all(0),
-              prefixIcon: Icon(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: TextField(
+        controller: searchController,
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.all(0),
+          prefixIcon: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Add space here
+              Icon(
                 Icons.search,
                 color: tdBlack,
                 size: 20,
               ),
-              // https://api.flutter.dev/flutter/material/InputDecoration/prefixIconConstraints.html
-              prefixIconConstraints:
-                  BoxConstraints(maxHeight: 20, minHeight: 20),
-              border: InputBorder.none,
-              hintText: "Search"),
-        ));
+              SizedBox(width: 8),
+            ],
+          ),
+          prefixIconConstraints: BoxConstraints(maxHeight: 20, minHeight: 20),
+          border: InputBorder.none,
+          hintText: "Search",
+        ),
+      ),
+    );
   }
 
   AppBar _buildAppBar() {
