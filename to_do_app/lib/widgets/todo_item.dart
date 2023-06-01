@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:to_do_app/constants/constants.dart';
 import 'package:to_do_app/model/todo.dart';
 
+typedef ChangeTaskStatus = Function(ToDo todo);
+typedef DeleteTask = Function(ToDo todo);
+
 class ToDoItem extends StatelessWidget {
   final ToDo toDo;
-
-  const ToDoItem({super.key, required this.toDo});
+  final ChangeTaskStatus f;
+  final DeleteTask d;
+  const ToDoItem(
+      {super.key, required this.toDo, required this.f, required this.d});
 
   @override
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.only(bottom: 20),
         child: ListTile(
-          onTap: () => {},
+          onTap: () => {f(toDo)},
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           tileColor: Colors.white,
@@ -44,7 +49,7 @@ class ToDoItem extends StatelessWidget {
                 icon: const Icon(Icons.delete),
                 iconSize:
                     20, // You need to set the size of your icon with size attribute for it to be centered
-                onPressed: () => {},
+                onPressed: () => {d(toDo)},
               )),
         ));
   }

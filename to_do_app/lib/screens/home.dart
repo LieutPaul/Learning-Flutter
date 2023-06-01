@@ -3,10 +3,35 @@ import 'package:to_do_app/constants/constants.dart';
 import 'package:to_do_app/model/todo.dart';
 import 'package:to_do_app/widgets/todo_item.dart';
 
-final toDoList = ToDo.firstToDoList();
+class Home extends StatefulWidget {
+  final toDoList = ToDo.firstToDoList();
+  Home({super.key});
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final myController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myController.dispose();
+    super.dispose();
+  }
+
+  void _changeTaskStatus(ToDo todo) {
+    setState(() {
+      todo.isDone = !todo.isDone;
+    });
+  }
+
+  void _deleteTask(ToDo todo) {
+    setState(() {
+      widget.toDoList.removeWhere((element) => element == todo);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +53,8 @@ class Home extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 30, fontWeight: FontWeight.w800),
                         )),
-                    for (ToDo toDo in toDoList)
-                      ToDoItem(
-                        toDo: toDo,
-                      )
+                    for (ToDo toDo in widget.toDoList)
+                      ToDoItem(toDo: toDo, f: _changeTaskStatus, d: _deleteTask)
                   ],
                 ))
               ])),
@@ -56,8 +79,9 @@ class Home extends StatelessWidget {
                       blurRadius: 10.0,
                       spreadRadius: 0.0)
                 ]),
-            child: const TextField(
-              decoration: InputDecoration(
+            child: TextField(
+              controller: myController,
+              decoration: const InputDecoration(
                   hintText: "Add a new todo item", border: InputBorder.none),
             ),
           ),
@@ -69,7 +93,17 @@ class Home extends StatelessWidget {
                   backgroundColor: tdBlue,
                   elevation: 10,
                   minimumSize: const Size(55, 55)),
-              onPressed: () => {},
+              onPressed: () => {
+                if (myController.text != "")
+                  {
+                    setState(() {
+                      widget.toDoList.add(
+                          ToDo(todoText: myController.text, isDone: false));
+                      myController.clear();
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    })
+                  }
+              },
               child: const Text(
                 '+',
                 style: TextStyle(fontSize: 40),
