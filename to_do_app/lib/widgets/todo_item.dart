@@ -4,6 +4,7 @@ import 'package:to_do_app/model/todo.dart';
 
 class ToDoItem extends StatelessWidget {
   final ToDo toDo;
+
   const ToDoItem({super.key, required this.toDo});
 
   @override
@@ -15,16 +16,19 @@ class ToDoItem extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           tileColor: Colors.white,
-          leading: const Icon(
-            Icons.check_box,
+          leading: Icon(
+            toDo.isDone == true
+                ? Icons.check_box
+                : Icons.check_box_outline_blank,
             color: tdBlue,
           ),
           title: Text(
             toDo.todoText!,
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 16,
                 color: tdBlack,
-                decoration: TextDecoration.lineThrough),
+                decoration:
+                    toDo.isDone == true ? TextDecoration.lineThrough : null),
           ),
           contentPadding:
               const EdgeInsets.symmetric(vertical: 5, horizontal: 20),

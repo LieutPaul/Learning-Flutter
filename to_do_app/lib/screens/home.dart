@@ -13,27 +13,70 @@ class Home extends StatelessWidget {
     return Scaffold(
         backgroundColor: tdBGColor,
         appBar: _buildAppBar(),
-        body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Column(children: [
-              _searchBox(),
-              Expanded(
-                  child: ListView(
-                children: [
-                  Container(
-                      margin: const EdgeInsets.only(top: 30, bottom: 30),
-                      child: const Text(
-                        "All ToDos",
-                        style: TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.w800),
-                      )),
-                  for (ToDo toDo in toDoList)
-                    ToDoItem(
-                      toDo: toDo,
-                    )
-                ],
-              ))
-            ])));
+        body: Stack(children: [
+          Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Column(children: [
+                _searchBox(),
+                Expanded(
+                    child: ListView(
+                  children: [
+                    Container(
+                        margin: const EdgeInsets.only(top: 30, bottom: 30),
+                        child: const Text(
+                          "All ToDos",
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.w800),
+                        )),
+                    for (ToDo toDo in toDoList)
+                      ToDoItem(
+                        toDo: toDo,
+                      )
+                  ],
+                ))
+              ])),
+          Align(alignment: Alignment.bottomCenter, child: _addNewItem())
+        ]));
+  }
+
+  Row _addNewItem() {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            margin: const EdgeInsets.only(bottom: 20, right: 20, left: 20),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: const [
+                  BoxShadow(
+                      color: Colors.grey,
+                      offset: Offset(0.0, 0.0),
+                      blurRadius: 10.0,
+                      spreadRadius: 0.0)
+                ]),
+            child: const TextField(
+              decoration: InputDecoration(
+                  hintText: "Add a new todo item", border: InputBorder.none),
+            ),
+          ),
+        ),
+        Container(
+            margin: const EdgeInsets.only(bottom: 20, right: 20),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: tdBlue,
+                  elevation: 10,
+                  minimumSize: const Size(55, 55)),
+              onPressed: () => {},
+              child: const Text(
+                '+',
+                style: TextStyle(fontSize: 40),
+              ),
+            ))
+      ],
+    );
   }
 
   Container _searchBox() {
