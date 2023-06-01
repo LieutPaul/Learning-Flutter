@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/constants/constants.dart';
+import 'package:to_do_app/model/todo.dart';
 import 'package:to_do_app/widgets/todo_item.dart';
+
+final toDoList = ToDo.firstToDoList();
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -24,7 +27,10 @@ class Home extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 30, fontWeight: FontWeight.w800),
                       )),
-                  ToDoItem()
+                  for (ToDo toDo in toDoList)
+                    ToDoItem(
+                      toDo: toDo,
+                    )
                 ],
               ))
             ])));
