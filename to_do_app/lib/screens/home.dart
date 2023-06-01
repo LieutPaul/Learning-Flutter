@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/constants/constants.dart';
+import 'package:to_do_app/widgets/todo_item.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -22,7 +23,8 @@ class Home extends StatelessWidget {
                         "All ToDos",
                         style: TextStyle(
                             fontSize: 30, fontWeight: FontWeight.w800),
-                      ))
+                      )),
+                  ToDoItem()
                 ],
               ))
             ])));
