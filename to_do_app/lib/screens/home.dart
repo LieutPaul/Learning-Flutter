@@ -142,7 +142,6 @@ class _HomeState extends State<Home> {
           prefixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Add space here
               Icon(
                 Icons.search,
                 color: tdBlack,
