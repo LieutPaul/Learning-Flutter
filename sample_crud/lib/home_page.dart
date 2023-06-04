@@ -10,12 +10,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth
+        .instance.currentUser; // As we can assume the user is logged in
     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.black,
-          title:
-              const Text("Home Page", style: TextStyle(color: Colors.white))),
       body: Container(
         padding: const EdgeInsets.only(top: 30),
         child: Column(children: [

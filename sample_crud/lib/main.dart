@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sample_crud/auth_page.dart';
 import 'package:sample_crud/home_page.dart';
-import 'package:sample_crud/login_widget.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +30,10 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: const Text("Register Login Logout App",
+              style: TextStyle(color: Colors.white))),
       body: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
@@ -41,7 +45,7 @@ class MainPage extends StatelessWidget {
             } else if (snapshot.hasData) {
               return const HomePage();
             } else {
-              return const LoginWidget();
+              return const AuthPage();
             }
           }),
     );

@@ -3,22 +3,24 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sample_crud/main.dart';
 
-class LoginWidget extends StatefulWidget {
+class SignUpWidget extends StatefulWidget {
   final VoidCallback handleSignUpClick;
-  const LoginWidget({super.key, required this.handleSignUpClick});
+  const SignUpWidget({super.key, required this.handleSignUpClick});
 
   @override
-  State<LoginWidget> createState() => _LoginWidgetState();
+  State<SignUpWidget> createState() => _SignUpWidgetState();
 }
 
-class _LoginWidgetState extends State<LoginWidget> {
+class _SignUpWidgetState extends State<SignUpWidget> {
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final password1Controller = TextEditingController();
+  final password2Controller = TextEditingController();
 
   @override
   void dispose() {
     emailController.dispose();
-    passwordController.dispose();
+    password1Controller.dispose();
+    password2Controller.dispose();
     super.dispose();
   }
 
@@ -31,7 +33,7 @@ class _LoginWidgetState extends State<LoginWidget> {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+        password: password1Controller.text.trim(),
       );
     } on FirebaseAuthException catch (e) {
       // ignore: avoid_print
@@ -50,7 +52,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               children: [
                 const Center(
                     child: Text(
-                  "Provide Login Credentials",
+                  "Provide Sign-up Credentials",
                   style: TextStyle(fontWeight: FontWeight.w400, fontSize: 20),
                 )),
                 const SizedBox(height: 30),
@@ -64,10 +66,19 @@ class _LoginWidgetState extends State<LoginWidget> {
                 const SizedBox(height: 30),
                 TextField(
                   obscureText: true,
-                  controller: passwordController,
+                  controller: password1Controller,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
+                  ),
+                ),
+                const SizedBox(height: 30),
+                TextField(
+                  obscureText: true,
+                  controller: password2Controller,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Confirm Password',
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -80,7 +91,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     color: Colors.white,
                   ),
                   label: const Text(
-                    "Sign In",
+                    "Sign Up",
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: signIn,
@@ -91,12 +102,12 @@ class _LoginWidgetState extends State<LoginWidget> {
                 RichText(
                   text: TextSpan(
                       style: const TextStyle(color: Colors.black),
-                      text: "No Account? ",
+                      text: "Already have an Account? ",
                       children: [
                         TextSpan(
                             recognizer: TapGestureRecognizer()
                               ..onTap = widget.handleSignUpClick,
-                            text: "Sign Up",
+                            text: "Log In",
                             style: const TextStyle(
                                 decoration: TextDecoration.underline,
                                 color: Color.fromARGB(255, 0, 100, 3)))
