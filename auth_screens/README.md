@@ -25,7 +25,7 @@ flutter pub add firebase_core
 flutter pub add firebase_auth
 ```
 
-and change the android/build.gradle to
+and change the android/build.gradle classpath to 'com.google.gms:google-services:4.3.15'
 
 ```gradle
 
