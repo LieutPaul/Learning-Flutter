@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:social_media/components/button.dart';
-import 'package:social_media/components/text_field.dart';
 
-class LoginPage extends StatefulWidget {
-  final Function()? toggleToRegister;
-  const LoginPage({super.key, this.toggleToRegister});
+import '../components/button.dart';
+import '../components/text_field.dart';
+
+class RegisterPage extends StatefulWidget {
+  final Function()? toggleToLogin;
+  const RegisterPage({super.key, required this.toggleToLogin});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final loginformKey = GlobalKey<FormState>();
+class _RegisterPageState extends State<RegisterPage> {
+  final signupformKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final password1Controller = TextEditingController();
+  final password2Controller = TextEditingController();
 
   @override
   void dispose() {
     emailController.dispose();
-    passwordController.dispose();
+    password1Controller.dispose();
+    password2Controller.dispose();
     super.dispose();
   }
 
@@ -31,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Form(
-              key: loginformKey,
+              key: signupformKey,
               child: ListView(
                 children: [
                   Column(
@@ -39,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 100),
                       const Icon(Icons.lock, size: 80),
                       const SizedBox(height: 40),
-                      const Text("Welcome to the App! Login Here."),
+                      const Text("Welcome to the App! Register here."),
                       const SizedBox(height: 40),
                       CustomTextField(
                           purpose: "email",
@@ -49,20 +52,31 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 15),
                       CustomTextField(
                           purpose: "password",
-                          controller: passwordController,
+                          controller: password1Controller,
                           hintText: "Enter Password",
                           obscureText: true),
+                      const SizedBox(height: 15),
+                      CustomTextField(
+                          purpose: "confirm",
+                          onChange: (val) {
+                            setState(() {});
+                          },
+                          // This is to rebuild the widget so that the correct value of password1 is obtained
+                          firstPassword: password1Controller.text,
+                          controller: password2Controller,
+                          hintText: "Confirm Password",
+                          obscureText: true),
                       const SizedBox(height: 30),
-                      CustomButton(onTap: () {}, text: "Sign In"),
+                      CustomButton(onTap: () {}, text: "Sign Up"),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Not a Member? "),
+                          const Text("Already have an account? "),
                           GestureDetector(
-                            onTap: widget.toggleToRegister,
+                            onTap: widget.toggleToLogin,
                             child: const Text(
-                              "Register Now",
+                              "Login Now",
                               style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   color: Colors.blue),
