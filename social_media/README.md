@@ -1,4 +1,4 @@
-# sample_crud
+# social_media
 
 A new Flutter project.
 
