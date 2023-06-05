@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media/components/drawer.dart';
 import 'package:social_media/components/text_field.dart';
 import 'package:social_media/components/wall_post.dart';
+import 'package:social_media/pages/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,6 +38,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: MyDrawer(
+        onProfileTap: goToProfilePage,
+        onSignOut: signOut,
+      ),
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
         title: const Text("The Wall"),
@@ -113,5 +119,16 @@ class _HomePageState extends State<HomePage> {
             return const Center(child: CircularProgressIndicator());
           }),
     );
+  }
+
+  void signOut() {
+    Navigator.pop(context);
+    FirebaseAuth.instance.signOut();
+  }
+
+  void goToProfilePage() {
+    Navigator.pop(context);
+    Navigator.push(context,
+        MaterialPageRoute(builder: ((context) => const ProfilePage())));
   }
 }
