@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
         'TimeStamp': Timestamp.now()
       });
     }
+    textController.clear();
   }
 
   @override
@@ -48,7 +49,8 @@ class _HomePageState extends State<HomePage> {
           child: Column(children: [
         displayPosts(),
         addPost(),
-        Text("Logged in as: ${currentUser.email!}")
+        Text("Logged in as: ${currentUser.email!}"),
+        const SizedBox(height: 20),
       ])),
     );
   }
@@ -73,8 +75,10 @@ class _HomePageState extends State<HomePage> {
   Expanded displayPosts() {
     return Expanded(
       child: StreamBuilder(
-          stream:
-              FirebaseFirestore.instance.collection("User Posts").snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection("User Posts")
+              .orderBy("TimeStamp", descending: false)
+              .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
               return ListView.builder(
@@ -87,10 +91,13 @@ class _HomePageState extends State<HomePage> {
                     final user = post.data().containsKey('UserEmail')
                         ? post['UserEmail']
                         : '';
+                    final timeStamp = post.data().containsKey('TimeStamp')
+                        ? post['TimeStamp']
+                        : '';
                     return WallPost(
-                      message: message,
-                      user: user,
-                    );
+                        message: message,
+                        user: user,
+                        time: timeStamp.toString());
                   });
             } else if (snapshot.hasError) {
               return Center(
