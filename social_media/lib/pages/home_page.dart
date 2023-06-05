@@ -26,7 +26,8 @@ class _HomePageState extends State<HomePage> {
       FirebaseFirestore.instance.collection("User Posts").add({
         'UserEmail': currentUser.email,
         'Message': textController.text,
-        'TimeStamp': Timestamp.now()
+        'TimeStamp': Timestamp.now(),
+        'Likes': []
       });
     }
     textController.clear();
@@ -94,10 +95,15 @@ class _HomePageState extends State<HomePage> {
                     final timeStamp = post.data().containsKey('TimeStamp')
                         ? post['TimeStamp']
                         : '';
+                    final likes =
+                        post.data().containsKey('Likes') ? post['Likes'] : '';
                     return WallPost(
-                        message: message,
-                        user: user,
-                        time: timeStamp.toString());
+                      message: message,
+                      user: user,
+                      time: timeStamp.toString(),
+                      postId: post.id,
+                      likes: List<String>.from(likes ?? []),
+                    );
                   });
             } else if (snapshot.hasError) {
               return Center(
