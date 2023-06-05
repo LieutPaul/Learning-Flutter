@@ -22,7 +22,6 @@ class CustomTextField extends StatelessWidget {
     if (value == firstPassword) {
       return null;
     } else {
-      print(firstPassword);
       return "Passwords don't match";
     }
   }
@@ -41,7 +40,7 @@ class CustomTextField extends StatelessWidget {
 
   final TextEditingController controller;
   final ValueChanged<String>? onChange;
-  final String purpose;
+  final String? purpose;
   final String? firstPassword;
   final String hintText;
   final bool obscureText; // For passwords
@@ -51,7 +50,7 @@ class CustomTextField extends StatelessWidget {
       required this.controller,
       required this.hintText,
       required this.obscureText,
-      required this.purpose,
+      this.purpose,
       this.firstPassword,
       this.onChange});
 

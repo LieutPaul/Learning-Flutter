@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:social_media/components/button.dart';
 import 'package:social_media/components/text_field.dart';
+import 'package:social_media/main.dart';
 
 class LoginPage extends StatefulWidget {
   final Function()? toggleToRegister;
@@ -20,6 +22,28 @@ class _LoginPageState extends State<LoginPage> {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void signIn() async {
+    if (!loginformKey.currentState!.validate()) {
+      return;
+    }
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.message!),
+      ));
+    }
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
   }
 
   @override
@@ -53,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                           hintText: "Enter Password",
                           obscureText: true),
                       const SizedBox(height: 30),
-                      CustomButton(onTap: () {}, text: "Sign In"),
+                      CustomButton(onTap: signIn, text: "Sign In"),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

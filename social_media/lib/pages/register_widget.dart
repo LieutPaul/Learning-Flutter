@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media/main.dart';
 
 import '../components/button.dart';
 import '../components/text_field.dart';
@@ -16,6 +18,28 @@ class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final password1Controller = TextEditingController();
   final password2Controller = TextEditingController();
+  Future signUp() async {
+    if (!signupformKey.currentState!.validate()) {
+      return;
+    }
+
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: password1Controller.text.trim());
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.message!),
+      ));
+    }
+
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+  }
 
   @override
   void dispose() {
@@ -67,7 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           hintText: "Confirm Password",
                           obscureText: true),
                       const SizedBox(height: 30),
-                      CustomButton(onTap: () {}, text: "Sign Up"),
+                      CustomButton(onTap: signUp, text: "Sign Up"),
                       const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
