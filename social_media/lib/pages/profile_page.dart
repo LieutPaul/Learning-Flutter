@@ -61,15 +61,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         sectionName: "bio",
                         onPressed: () => editField('bio')),
                     const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.all(25),
-                      child: Text(
-                        "My Posts",
-                        style: TextStyle(
-                            color: Colors.grey[700],
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ),
                   ],
                 );
               } else if (snapshot.hasError) {

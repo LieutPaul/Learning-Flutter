@@ -29,7 +29,8 @@ class _HomePageState extends State<HomePage> {
         'UserEmail': currentUser.email,
         'Message': textController.text,
         'TimeStamp': Timestamp.now(),
-        'Likes': []
+        'Likes': [],
+        'Comments': []
       });
     }
     textController.clear();
@@ -103,13 +104,16 @@ class _HomePageState extends State<HomePage> {
                         : '';
                     final likes =
                         post.data().containsKey('Likes') ? post['Likes'] : '';
+                    final comments = post.data().containsKey('Comments')
+                        ? post['Comments']
+                        : '';
                     return WallPost(
-                      message: message,
-                      user: user,
-                      time: timeStamp.toString(),
-                      postId: post.id,
-                      likes: List<String>.from(likes ?? []),
-                    );
+                        message: message,
+                        user: user,
+                        time: timeStamp,
+                        postId: post.id,
+                        likes: List<String>.from(likes ?? []),
+                        comments: List<dynamic>.from(comments ?? []));
                   });
             } else if (snapshot.hasError) {
               return Center(

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media/components/comment_button.dart';
 import 'package:social_media/components/like_button.dart';
 
 class WallPost extends StatefulWidget {
@@ -8,14 +9,16 @@ class WallPost extends StatefulWidget {
   final String user;
   final String postId;
   final List<String> likes; // All emails of users that liked it.
-  final String? time;
+  final Timestamp? time;
+  final List<dynamic> comments;
   const WallPost(
       {super.key,
       required this.message,
       required this.user,
       this.time,
       required this.postId,
-      required this.likes});
+      required this.likes,
+      required this.comments});
 
   @override
   State<WallPost> createState() => _WallPostState();
@@ -24,6 +27,7 @@ class WallPost extends StatefulWidget {
 class _WallPostState extends State<WallPost> {
   final currentUser = FirebaseAuth.instance.currentUser;
   bool isLiked = false;
+  bool isCommented = false;
 
   @override
   void initState() {
@@ -53,28 +57,57 @@ class _WallPostState extends State<WallPost> {
   Widget build(BuildContext context) {
     return Container(
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(8)),
+            color: Colors.white, borderRadius: BorderRadius.circular(3)),
         margin: const EdgeInsets.only(top: 25, left: 25, right: 25),
         padding: const EdgeInsets.all(25),
         child: Row(children: [
-          Column(
-            children: [
-              LikeButton(
-                isLiked: isLiked,
-                onTap: toggleLike,
-              ),
-              const SizedBox(height: 5),
-              Text(widget.likes.length.toString())
-            ],
-          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.user, style: TextStyle(color: Colors.grey[500])),
-                const SizedBox(height: 10),
                 Text(widget.message),
+                Row(
+                  children: [
+                    Text(widget.user,
+                        style: TextStyle(color: Colors.grey[400])),
+                    Column(children: [
+                      Text(" . ",
+                          style:
+                              TextStyle(fontSize: 20, color: Colors.grey[400])),
+                      const SizedBox(height: 13),
+                    ]),
+                    Text(
+                        "${widget.time!.toDate().day}/${widget.time!.toDate().month}/${widget.time!.toDate().year}",
+                        style: TextStyle(color: Colors.grey[400])),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        LikeButton(
+                          isLiked: isLiked,
+                          onTap: toggleLike,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(widget.likes.length.toString())
+                      ],
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      children: [
+                        CommentButton(
+                          isCommented: isCommented,
+                          postId: widget.postId,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(widget.comments.length.toString())
+                      ],
+                    ),
+                  ],
+                )
               ],
             ),
           ),
