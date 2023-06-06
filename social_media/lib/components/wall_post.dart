@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:social_media/components/comment.dart';
 import 'package:social_media/components/comment_button.dart';
 import 'package:social_media/components/like_button.dart';
 
@@ -27,7 +28,6 @@ class WallPost extends StatefulWidget {
 class _WallPostState extends State<WallPost> {
   final currentUser = FirebaseAuth.instance.currentUser;
   bool isLiked = false;
-  bool isCommented = false;
 
   @override
   void initState() {
@@ -67,50 +67,72 @@ class _WallPostState extends State<WallPost> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.message),
-                Row(
-                  children: [
-                    Text(widget.user,
-                        style: TextStyle(color: Colors.grey[400])),
-                    Column(children: [
-                      Text(" . ",
-                          style:
-                              TextStyle(fontSize: 20, color: Colors.grey[400])),
-                      const SizedBox(height: 13),
-                    ]),
-                    Text(
-                        "${widget.time!.toDate().day}/${widget.time!.toDate().month}/${widget.time!.toDate().year}",
-                        style: TextStyle(color: Colors.grey[400])),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        LikeButton(
-                          isLiked: isLiked,
-                          onTap: toggleLike,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(widget.likes.length.toString())
-                      ],
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      children: [
-                        CommentButton(
-                          isCommented: isCommented,
-                          postId: widget.postId,
-                        ),
-                        const SizedBox(height: 5),
-                        Text(widget.comments.length.toString())
-                      ],
-                    ),
-                  ],
-                )
+                postText(),
+                likeAndCommentIcons(),
+                commentsSection()
               ],
             ),
           ),
         ]));
+  }
+
+  Row likeAndCommentIcons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Column(
+          children: [
+            LikeButton(
+              isLiked: isLiked,
+              onTap: toggleLike,
+            ),
+            const SizedBox(height: 5),
+            Text(widget.likes.length.toString())
+          ],
+        ),
+        const SizedBox(width: 10),
+        Column(
+          children: [
+            CommentButton(
+              postId: widget.postId,
+            ),
+            const SizedBox(height: 5),
+            Text(widget.comments.length.toString())
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row postText() {
+    return Row(
+      children: [
+        Text(widget.user, style: TextStyle(color: Colors.grey[400])),
+        Column(children: [
+          Text(" . ", style: TextStyle(fontSize: 20, color: Colors.grey[400])),
+          const SizedBox(height: 13),
+        ]),
+        Text(
+            "${widget.time!.toDate().day}/${widget.time!.toDate().month}/${widget.time!.toDate().year}",
+            style: TextStyle(color: Colors.grey[400])),
+      ],
+    );
+  }
+
+  Container commentsSection() {
+    return Container(
+        padding: EdgeInsets.zero,
+        height: widget.comments.length >= 2
+            ? 150
+            : (widget.comments.isNotEmpty ? 100 : 10),
+        child: ListView(
+          children: widget.comments.map((comment) {
+            return Comment(
+              text: comment['Comment'],
+              user: comment['User'],
+              time: comment['TimeStamp'],
+            );
+          }).toList(),
+        ));
   }
 }

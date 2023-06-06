@@ -3,10 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CommentButton extends StatefulWidget {
-  final bool isCommented;
   final String postId;
-  const CommentButton(
-      {super.key, required this.isCommented, required this.postId});
+  const CommentButton({super.key, required this.postId});
 
   @override
   State<CommentButton> createState() => _CommentButtonState();
@@ -18,8 +16,7 @@ class _CommentButtonState extends State<CommentButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () => newComment(),
-        child: Icon(Icons.comment,
-            color: widget.isCommented ? Colors.black : Colors.grey));
+        child: const Icon(Icons.comment, color: Colors.grey));
   }
 
   Future<void> newComment() async {
