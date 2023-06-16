@@ -1,5 +1,8 @@
 import 'package:budget_tracker/helper/helper.dart';
-import 'package:budget_tracker/widgets/expense_component.dart';
+import 'package:budget_tracker/widgets/checkbox.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:budget_tracker/widgets/expense_component.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,6 +14,7 @@ class DailyPage extends StatefulWidget {
 }
 
 class _DailyPageState extends State<DailyPage> {
+  final currentUser = FirebaseAuth.instance.currentUser;
   DateFormat formatter = DateFormat('yyyy-MM-dd');
   String _selectedDate = "";
   List<DateTime> week = [];
@@ -30,7 +34,7 @@ class _DailyPageState extends State<DailyPage> {
               DateTime.now().day.toString()
           ? FloatingActionButton(
               backgroundColor: Colors.white,
-              onPressed: () {},
+              onPressed: () => addExpense(),
               child: const Icon(
                 Icons.add,
                 color: Colors.black,
@@ -42,13 +46,139 @@ class _DailyPageState extends State<DailyPage> {
     );
   }
 
+  Future<void> addExpense() async {
+    String expenseTitle = "",
+        expenseDescription = "No Description",
+        expenseCategory = "";
+    int expenseAmount = 0;
+    bool earning = false;
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text("Add a New Expense",
+                  style: TextStyle(color: Colors.black)),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextField(
+                        autofocus: true,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: const InputDecoration(
+                            hintText: "Title of Expense",
+                            hintStyle: TextStyle(color: Colors.grey)),
+                        onChanged: (value) {
+                          expenseTitle = value;
+                        },
+                      ),
+                      TextField(
+                        autofocus: true,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: const InputDecoration(
+                            hintText: "Description (Can be empty)",
+                            hintStyle: TextStyle(color: Colors.grey)),
+                        onChanged: (value) {
+                          expenseDescription = value;
+                        },
+                      ),
+                      TextField(
+                        autofocus: true,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: const InputDecoration(
+                            hintText: "Category of Expense",
+                            hintStyle: TextStyle(color: Colors.grey)),
+                        onChanged: (value) {
+                          expenseCategory = value;
+                        },
+                      ),
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        autofocus: true,
+                        style: const TextStyle(color: Colors.black),
+                        decoration: const InputDecoration(
+                            hintText: "Expense Amount",
+                            hintStyle: TextStyle(color: Colors.grey)),
+                        onChanged: (value) {
+                          int? parsedValue = int.tryParse(value);
+                          if (parsedValue != null) {
+                            expenseAmount = parsedValue;
+                          }
+                        },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          MyCheckbox(
+                            initialValue: earning,
+                            onChanged: (value) {
+                              earning = value;
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Amount is an earning',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      "Cancel",
+                      style: TextStyle(color: Colors.black),
+                    )),
+                TextButton(
+                    onPressed: () {
+                      if (expenseTitle != "" &&
+                          expenseCategory != "" &&
+                          expenseAmount >= 0) {
+                        Navigator.of(context).pop([
+                          expenseTitle,
+                          expenseDescription,
+                          expenseCategory,
+                          expenseAmount
+                        ]);
+                      } else {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text("Please Enter Valid Inputs"),
+                        ));
+                      }
+                    },
+                    child: const Text(
+                      "Confirm",
+                      style: TextStyle(color: Colors.black),
+                    )),
+              ],
+            ));
+
+    await FirebaseFirestore.instance.collection("Expenses").add({
+      "Title": expenseTitle,
+      "Description": expenseDescription,
+      "Category": expenseCategory,
+      "Amount": expenseAmount,
+      "Earning": earning,
+      "Users": [currentUser!.email]
+    });
+  }
+
   Widget body() {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           topBar(),
-          Flexible(
+          Expanded(
+            flex: 1,
             child: ListView(children: [
               Padding(
                 padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
@@ -57,26 +187,6 @@ class _DailyPageState extends State<DailyPage> {
                         fontSize: 20,
                         color: Color.fromARGB(255, 180, 218, 255))),
               ),
-              const Expense(
-                  title: "Salary for 2023",
-                  category: "Income",
-                  amount: 200000,
-                  expenditure: false),
-              const Expense(
-                  title: "title",
-                  category: "category",
-                  amount: 200,
-                  expenditure: true),
-              const Expense(
-                  title: "title",
-                  category: "category",
-                  amount: 200,
-                  expenditure: true),
-              const Expense(
-                  title: "title",
-                  category: "category",
-                  amount: 200,
-                  expenditure: true),
             ]),
           ),
         ]);
@@ -84,6 +194,7 @@ class _DailyPageState extends State<DailyPage> {
 
   Container topBar() {
     return Container(
+      margin: const EdgeInsets.all(0),
       color: Colors.black,
       child: SafeArea(
         child: Container(
@@ -91,18 +202,12 @@ class _DailyPageState extends State<DailyPage> {
             color: Colors.black,
           ),
           child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              children: [
-                const SizedBox(height: 5),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(7, (index) {
-                      return calendarCircle(index);
-                    }))
-              ],
-            ),
-          ),
+              padding: const EdgeInsets.all(15),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(7, (index) {
+                    return calendarCircle(index);
+                  }))),
         ),
       ),
     );
