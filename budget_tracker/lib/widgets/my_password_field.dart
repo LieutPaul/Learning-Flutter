@@ -15,9 +15,11 @@ class MyPasswordField extends StatelessWidget {
     super.key,
     required this.isPasswordVisible,
     required this.onTap,
+    required this.controller,
   });
 
   final bool isPasswordVisible;
+  final TextEditingController controller;
   final Function() onTap;
 
   @override
@@ -28,6 +30,7 @@ class MyPasswordField extends StatelessWidget {
         style: kBodyText.copyWith(
           color: Colors.white,
         ),
+        controller: controller,
         obscureText: isPasswordVisible,
         keyboardType: TextInputType.text,
         textInputAction: TextInputAction.done,

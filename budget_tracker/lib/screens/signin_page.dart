@@ -1,3 +1,5 @@
+import 'package:budget_tracker/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
@@ -12,7 +14,43 @@ class SignInPage extends StatefulWidget {
 }
 
 class SignInPageState extends State<SignInPage> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
   bool isPasswordVisible = true;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future signIn() async {
+    if (emailController.text.isEmpty || passwordController.text.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+            "Email should be of valid format and password's length should be >= 6"),
+      ));
+      return;
+    }
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.message!),
+      ));
+    }
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +59,12 @@ class SignInPageState extends State<SignInPage> {
         elevation: 0,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => const WelcomePage(),
+              ),
+            );
           },
           icon: const Image(
             width: 24,
@@ -61,11 +104,13 @@ class SignInPageState extends State<SignInPage> {
                           const SizedBox(
                             height: 60,
                           ),
-                          const MyTextField(
-                            hintText: 'Phone, email or username',
-                            inputType: TextInputType.text,
+                          MyTextField(
+                            hintText: 'Email',
+                            inputType: TextInputType.emailAddress,
+                            controller: emailController,
                           ),
                           MyPasswordField(
+                            controller: passwordController,
                             isPasswordVisible: isPasswordVisible,
                             onTap: () {
                               setState(() {
@@ -88,7 +133,7 @@ class SignInPageState extends State<SignInPage> {
                             Navigator.push(
                               context,
                               CupertinoPageRoute(
-                                builder: (context) => RegisterPage(),
+                                builder: (context) => const RegisterPage(),
                               ),
                             );
                           },
@@ -106,7 +151,7 @@ class SignInPageState extends State<SignInPage> {
                     ),
                     MyTextButton(
                       buttonName: 'Sign In',
-                      onTap: () {},
+                      onTap: signIn,
                       bgColor: Colors.white,
                       textColor: Colors.black87,
                     ),

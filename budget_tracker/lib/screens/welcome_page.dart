@@ -18,30 +18,30 @@ class WelcomePage extends StatelessWidget {
               Flexible(
                 child: Column(
                   children: [
+                    const SizedBox(height: 50),
                     Center(
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: const Image(
-                          image:
-                              AssetImage('assets/images/team_illustration.png'),
+                          image: AssetImage('assets/images/Symbol.png'),
                         ),
                       ),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
                     const Text(
-                      "Enterprise team\ncollaboration.",
+                      "KanjoosMaster",
                       style: kHeadline,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: const Text(
-                        "Bring together your files, your tools, project and people.Including a new mobile and desktop application.",
+                        "One Stop solution for you to keep track of all your expenditures and income. We also provide several other budget tracking features.",
                         style: kBodyText,
                         textAlign: TextAlign.center,
                       ),
@@ -70,9 +70,10 @@ class WelcomePage extends StatelessWidget {
                         textColor: Colors.black87,
                       ),
                     ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: MyTextButton(
-                        bgColor: Colors.transparent,
+                        bgColor: Colors.white,
                         buttonName: 'Sign In',
                         onTap: () {
                           Navigator.push(
@@ -81,7 +82,7 @@ class WelcomePage extends StatelessWidget {
                                 builder: (context) => const SignInPage(),
                               ));
                         },
-                        textColor: Colors.white,
+                        textColor: Colors.black87,
                       ),
                     ),
                   ],

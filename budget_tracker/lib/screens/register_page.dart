@@ -1,3 +1,9 @@
+import 'package:budget_tracker/main.dart';
+import 'package:budget_tracker/screens/signin_page.dart';
+import 'package:budget_tracker/screens/welcome_page.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart';
 import '../widgets/widget.dart';
@@ -11,6 +17,46 @@ class RegisterPage extends StatefulWidget {
 
 class RegisterPageState extends State<RegisterPage> {
   bool passwordVisibility = true;
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    nameController.dispose();
+    super.dispose();
+  }
+
+  Future signUp() async {
+    if (nameController.text.isEmpty ||
+        passwordController.text.length < 6 ||
+        EmailValidator.validate(emailController.text) == false) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text(
+            "None of the fields can be empty, email should be of valid format and password's length should be >= 6"),
+      ));
+      return;
+    }
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()));
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim());
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.message!),
+      ));
+    }
+
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +65,12 @@ class RegisterPageState extends State<RegisterPage> {
         elevation: 0,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => const WelcomePage(),
+              ),
+            );
           },
           icon: const Image(
             width: 24,
@@ -54,20 +105,17 @@ class RegisterPageState extends State<RegisterPage> {
                           const SizedBox(
                             height: 50,
                           ),
-                          const MyTextField(
-                            hintText: 'Name',
-                            inputType: TextInputType.name,
-                          ),
-                          const MyTextField(
-                            hintText: 'Email',
-                            inputType: TextInputType.emailAddress,
-                          ),
-                          const MyTextField(
-                            hintText: 'Phone',
-                            inputType: TextInputType.phone,
-                          ),
+                          MyTextField(
+                              hintText: 'Name',
+                              inputType: TextInputType.name,
+                              controller: nameController),
+                          MyTextField(
+                              hintText: 'Email',
+                              inputType: TextInputType.emailAddress,
+                              controller: emailController),
                           MyPasswordField(
                             isPasswordVisible: passwordVisibility,
+                            controller: passwordController,
                             onTap: () {
                               setState(() {
                                 passwordVisibility = !passwordVisibility;
@@ -84,10 +132,20 @@ class RegisterPageState extends State<RegisterPage> {
                           "Already have an account? ",
                           style: kBodyText,
                         ),
-                        Text(
-                          "Sign In",
-                          style: kBodyText.copyWith(
-                            color: Colors.white,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (context) => const SignInPage(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            "Sign In",
+                            style: kBodyText.copyWith(
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ],
@@ -97,7 +155,7 @@ class RegisterPageState extends State<RegisterPage> {
                     ),
                     MyTextButton(
                       buttonName: 'Register',
-                      onTap: () {},
+                      onTap: signUp,
                       bgColor: Colors.white,
                       textColor: Colors.black87,
                     )
